@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoRepo — Repositorio de Autobiografías Estudiantiles</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p:#6B3FA0;--p2:#8B5CC0;--p3:#EDE7F6;--p4:#F5F0FF;
+  --gold:#C9A84C;--gold2:#FFF8ED;
+  --green:#2E7D5E;--green2:#E6F7F1;
+  --red:#C0392B;--red2:#FDEDEB;
+  --blue:#1976D2;--blue2:#E3F2FD;
+  --text:#1A0A2E;--text2:#5A4070;--text3:#9E8AB0;
+  --bg:#F7F4FC;--white:#FFFFFF;--border:#E0D6F0;
+  --warm:#FAF7FF;
+  --sh:0 2px 16px rgba(107,63,160,0.10);
+  --sh2:0 6px 32px rgba(107,63,160,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* TOP BAR */
+.topbar{background:var(--p);display:flex;align-items:center;padding:0 24px;height:60px;gap:20px;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto;cursor:pointer;}
+.logo-mark{width:34px;height:34px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;color:#fff;font-weight:500;}
+.logo-text{font-size:16px;font-weight:600;color:#fff;}
+.logo-text span{color:rgba(255,255,255,0.6);font-weight:300;font-size:13px;margin-left:6px;}
+.top-search{display:flex;align-items:center;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:8px;padding:7px 14px;gap:8px;width:260px;}
+.top-search input{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:13px;color:#fff;outline:none;flex:1;}
+.top-search input::placeholder{color:rgba(255,255,255,0.5);}
+.role-pill{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:12px;padding:5px 14px;border-radius:20px;cursor:pointer;font-weight:500;}
+.avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;cursor:pointer;}
+
+/* SIDEBAR + MAIN */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);}
+.sidebar{background:var(--white);border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column;gap:2px;}
+.sb-section{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;padding:14px 10px 4px;}
+.sb-section:first-child{padding-top:4px;}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text2);width:100%;text-align:left;transition:all 0.15s;position:relative;}
+.nav-btn:hover{background:var(--p4);color:var(--p);}
+.nav-btn.active{background:var(--p3);color:var(--p);font-weight:500;}
+.nav-btn .ic{width:18px;text-align:center;font-size:15px;}
+.nb{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.sb-footer{margin-top:auto;padding:14px 10px;border-top:1px solid var(--border);}
+.sf-user{display:flex;align-items:center;gap:10px;}
+.sf-av{width:36px;height:36px;border-radius:50%;background:var(--p3);border:2px solid var(--p);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--p);}
+.sf-info strong{display:block;font-size:13px;font-weight:600;}
+.sf-info span{font-size:11px;color:var(--text3);}
+
+/* MAIN */
+.main{overflow-y:auto;}
+.page{display:none;padding:28px;}
+.page.active{display:block;}
+.page-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--text3);margin-bottom:24px;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--p) 0%,var(--p2) 100%);border-radius:14px;padding:32px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden;}
+.hero::before{content:'"';position:absolute;font-family:'Playfair Display',serif;font-size:300px;color:rgba(255,255,255,0.05);top:-60px;right:20px;line-height:1;}
+.hero h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:6px;}
+.hero h2 em{font-style:italic;color:rgba(255,255,255,0.85);}
+.hero p{font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:20px;max-width:500px;line-height:1.7;}
+.hero-search{display:flex;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:10px;overflow:hidden;max-width:520px;backdrop-filter:blur(8px);}
+.hero-search input{flex:1;padding:12px 16px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:14px;color:#fff;outline:none;}
+.hero-search input::placeholder{color:rgba(255,255,255,0.55);}
+.hero-search button{padding:12px 22px;background:#fff;border:none;color:var(--p);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.stat-card .sn{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:var(--p);margin-bottom:3px;}
+.stat-card .sl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;}
+.stat-card .st{font-size:11px;color:var(--green);margin-top:3px;}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--white);color:var(--text2);cursor:pointer;transition:all 0.15s;}
+.chip.active{background:var(--p);color:#fff;border-color:var(--p);}
+
+/* RESOURCE GRID */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.res-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;box-shadow:var(--sh);}
+.res-card:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:var(--p2);}
+.rc-top{height:88px;display:flex;align-items:flex-end;padding:12px;position:relative;}
+.rc-avatar{width:52px;height:52px;border-radius:50%;border:3px solid var(--white);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;position:absolute;bottom:-18px;left:16px;}
+.rc-grado{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.3);color:#fff;font-size:10px;padding:3px 9px;border-radius:10px;font-weight:600;}
+.rc-body{padding:28px 16px 14px;}
+.rc-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:2px;}
+.rc-titulo{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;}
+.rc-excerpt{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.meta-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.mc{font-size:9px;padding:2px 7px;border-radius:8px;background:#EDE7F6;color:#4A148C;font-family:'DM Mono',monospace;font-weight:500;}
+.rc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.tag{font-size:10px;padding:3px 8px;border-radius:10px;background:var(--bg);color:var(--text3);font-weight:600;}
+.rc-footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3);border-top:1px solid var(--border);padding-top:10px;}
+.rc-stars{color:var(--gold);font-weight:700;font-size:12px;}
+.btn-sm{padding:5px 12px;border-radius:6px;background:var(--p3);color:var(--p);border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+
+/* UPLOAD FORM */
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:680px;box-shadow:var(--sh);}
+.form-card h3{font-size:16px;font-weight:600;margin-bottom:4px;}
+.form-card>p{font-size:13px;color:var(--text3);margin-bottom:22px;line-height:1.6;}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--p);margin:20px 0 12px;display:flex;align-items:center;gap:8px;}
+.sec-label:first-of-type{margin-top:0;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:3px;}
+.fg .std{font-size:10px;color:var(--p);font-family:'DM Mono',monospace;background:var(--p3);padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--warm);outline:none;transition:border-color 0.15s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--p);background:#fff;}
+.fg textarea{height:90px;resize:vertical;line-height:1.7;}
+.dropzone{border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--warm);margin-bottom:16px;}
+.dropzone:hover{border-color:var(--p);background:var(--p4);}
+.dropzone p{font-size:13px;color:var(--text2);margin-top:6px;}
+.dropzone small{font-size:11px;color:var(--text3);}
+.btn-row{display:flex;gap:10px;margin-top:6px;}
+.btn-primary{background:var(--p);color:#fff;border:none;padding:11px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:background 0.2s;}
+.btn-primary:hover{background:#5A2D8A;}
+.btn-cancel{background:none;color:var(--text3);border:1px solid var(--border);padding:11px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;}
+
+/* EVALUATOR */
+.ev-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);}
+.table-card table{width:100%;border-collapse:collapse;font-size:13px;}
+.table-card th{background:var(--bg);padding:11px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
+.table-card td{padding:11px 16px;border-top:1px solid var(--border);vertical-align:middle;}
+.s-pending{background:var(--gold2);color:#7A5000;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;}
+.s-approved{background:var(--green2);color:#1A5C3E;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;}
+.s-rejected{background:var(--red2);color:#8C1A10;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;}
+.act-btn{font-size:12px;color:var(--p);cursor:pointer;text-decoration:underline;margin-right:8px;background:none;border:none;font-family:'DM Sans',sans-serif;}
+
+/* ROLES */
+.roles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.role-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.ri{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;}
+.ri-est{background:var(--blue2);}
+.ri-doc{background:var(--p3);}
+.ri-coord{background:var(--gold2);}
+.ri-admin{background:var(--red2);}
+.role-name{font-size:15px;font-weight:600;margin-bottom:10px;}
+.perm-list{list-style:none;}
+.perm-list li{font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--bg);display:flex;align-items:center;gap:6px;}
+.perm-list li:last-child{border:none;}
+.py{color:var(--green);font-weight:700;}
+.pn{color:var(--text3);}
+.flow-box{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;}
+.flow-box h3{font-size:15px;font-weight:600;margin-bottom:14px;}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.flow-step{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;text-align:center;min-width:120px;}
+.fs-num{font-size:10px;color:var(--p);font-family:'DM Mono',monospace;font-weight:500;margin-bottom:4px;}
+.fs-name{font-size:12px;font-weight:600;}
+.fs-role{font-size:10px;color:var(--text3);margin-top:2px;}
+.flow-arrow{color:var(--text3);font-size:18px;}
+
+/* METADATA PAGE */
+.meta-intro{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;}
+.meta-intro h3{font-size:15px;font-weight:600;margin-bottom:6px;}
+.meta-intro p{font-size:13px;color:var(--text2);line-height:1.7;}
+.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.mcard{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.mcard .mstd{font-size:10px;font-family:'DM Mono',monospace;background:var(--p3);color:var(--p);padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:8px;font-weight:500;}
+.mcard .mstd.lom{background:#E3F2FD;color:#1565C0;}
+.mcard .mname{font-size:13px;font-weight:600;margin-bottom:4px;}
+.mcard .mdesc{font-size:12px;color:var(--text3);line-height:1.6;}
+.mcard .mex{font-size:11px;color:var(--p2);background:var(--p4);padding:4px 8px;border-radius:6px;margin-top:8px;display:block;font-style:italic;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(26,10,46,0.6);z-index:300;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--white);border-radius:16px;max-width:600px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--sh2);}
+.modal-banner{height:110px;display:flex;align-items:flex-end;padding:0 26px 14px;position:relative;}
+.modal-av{width:68px;height:68px;border-radius:50%;border:4px solid var(--white);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;}
+.modal-close{position:absolute;top:12px;right:14px;background:rgba(255,255,255,0.25);border:none;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:18px 26px 26px;}
+.modal-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:3px;}
+.modal-sub{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:12px;}
+.modal-excerpt{font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:16px;border-left:3px solid var(--p2);padding-left:14px;font-style:italic;}
+.modal-sec{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--p);margin-bottom:10px;margin-top:16px;}
+.meta-table{width:100%;border-collapse:collapse;font-size:12px;}
+.meta-table td{padding:7px 10px;border:1px solid var(--border);}
+.meta-table td:first-child{background:var(--p3);color:var(--p);font-family:'DM Mono',monospace;font-weight:500;font-size:11px;width:42%;}
+.meta-table td:last-child{background:var(--warm);color:var(--text);}
+.stars-row{display:flex;gap:6px;margin-bottom:10px;}
+.star{font-size:24px;cursor:pointer;color:#D0C8E0;transition:color 0.1s;}
+.star.lit{color:var(--gold);}
+.review-area{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;height:80px;resize:vertical;color:var(--text);background:var(--warm);outline:none;}
+.review-area:focus{border-color:var(--p);}
+.btn-review{margin-top:10px;background:var(--p);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--p);color:#fff;padding:12px 22px;border-radius:10px;font-size:13px;font-weight:500;z-index:500;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.res-card{animation:fadeUp 0.3s ease both;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="showPage('explorar',document.querySelector('.nav-btn'))">
+    <div class="logo-mark">AR</div>
+    <div class="logo-text">AutoRepo <span>| Institución Educativa San José</span></div>
+  </div>
+  <div class="top-search">
+    <span style="color:rgba(255,255,255,0.5)">🔍</span>
+    <input type="text" placeholder="Buscar autobiografía, autor, tema…" id="top-search" oninput="doSearch()">
+  </div>
+  <div class="role-pill" onclick="cycleRole()">👤 <span id="role-label">Docente</span> ▾</div>
+  <div class="avatar" id="top-avatar">EZ</div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-section">Principal</div>
+  <button class="nav-btn active" onclick="showPage('explorar',this)"><span class="ic">🔍</span> Explorar</button>
+  <button class="nav-btn" onclick="showPage('subir',this)"><span class="ic">⬆</span> Subir autobiografía</button>
+  <button class="nav-btn" onclick="showPage('evaluador',this)"><span class="ic">⭐</span> Panel evaluador <span class="nb">8</span></button>
+  <div class="sb-section">Sistema</div>
+  <button class="nav-btn" onclick="showPage('roles',this)"><span class="ic">👥</span> Roles y flujos</button>
+  <button class="nav-btn" onclick="showPage('metadatos',this)"><span class="ic">🏷</span> Metadatos</button>
+  <div class="sb-footer">
+    <div class="sf-user">
+      <div class="sf-av" id="sb-av">EZ</div>
+      <div class="sf-info">
+        <strong>Eric Daniel Zuñiga Arredondo</strong>
+        <span id="sb-role">Docente · Institución Educativa</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- EXPLORAR -->
+  <div class="page active" id="page-explorar">
+    <div class="hero">
+      <h2>Repositorio de <em>Autobiografías</em> Estudiantiles</h2>
+      <p>Explora, descarga y valora las historias de vida de nuestros estudiantes. Cada relato es único e irrepetible.</p>
+      <div class="hero-search">
+        <input type="text" placeholder="Buscar por nombre, grado, tema, palabras clave…" id="hero-search" oninput="filterCards()">
+        <button onclick="filterCards()">Buscar</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="sn">64</div><div class="sl">Autobiografías</div><div class="st">↑ 12 este mes</div></div>
+      <div class="stat-card"><div class="sn">1,204</div><div class="sl">Lecturas totales</div><div class="st">↑ 218 esta semana</div></div>
+      <div class="stat-card"><div class="sn">4.5★</div><div class="sl">Valoración media</div></div>
+      <div class="stat-card"><div class="sn">5</div><div class="sl">Grados</div></div>
+    </div>
+    <div class="filters">
+      <span class="chip active" onclick="setFilter('todos',this)">Todos</span>
+      <span class="chip" onclick="setFilter('6°',this)">6° Grado</span>
+      <span class="chip" onclick="setFilter('7°',this)">7° Grado</span>
+      <span class="chip" onclick="setFilter('8°',this)">8° Grado</span>
+      <span class="chip" onclick="setFilter('9°',this)">9° Grado</span>
+      <span class="chip" onclick="setFilter('10°',this)">10° Grado</span>
+    </div>
+    <div class="res-grid" id="res-grid"></div>
+  </div>
+
+  <!-- SUBIR -->
+  <div class="page" id="page-subir">
+    <div class="page-title">Subir autobiografía</div>
+    <div class="page-sub">Completa los campos con metadatos Dublin Core (DC) y LOM. El docente revisará antes de publicar.</div>
+    <div class="form-card">
+      <h3>Nueva autobiografía estudiantil</h3>
+      <p>Los campos marcados con * son obligatorios. Los estándares de metadatos garantizan la correcta indexación del recurso.</p>
+      <div class="dropzone">
+        <div style="font-size:36px;">📄</div>
+        <p>Arrastra tu archivo aquí o haz clic para seleccionar</p>
+        <small>DC: format — PDF o Word · máximo 10 MB</small>
+      </div>
+      <div class="sec-label">Información del autor</div>
+      <div class="frow">
+        <div class="fg"><label>Nombre completo *</label><span class="std">DC: creator</span><input type="text" placeholder="Nombre y apellidos del estudiante"></div>
+        <div class="fg"><label>Grado *</label><span class="std">LOM: educational level</span><select><option>6° Sexto</option><option>7° Séptimo</option><option>8° Octavo</option><option>9° Noveno</option><option>10° Décimo</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Sección *</label><span class="std">LOM: context</span><select><option>A</option><option>B</option><option>C</option></select></div>
+        <div class="fg"><label>Docente responsable</label><span class="std">DC: contributor</span><input type="text" placeholder="Nombre del docente"></div>
+      </div>
+      <div class="sec-label">Sobre la autobiografía</div>
+      <div class="fg"><label>Título *</label><span class="std">DC: title</span><input type="text" placeholder="Ej: Mi vida entre montañas y sueños"></div>
+      <div class="fg"><label>Descripción / Extracto *</label><span class="std">DC: description</span><textarea placeholder="Párrafo introductorio que presenta la historia al lector..."></textarea></div>
+      <div class="frow">
+        <div class="fg"><label>Tema principal *</label><span class="std">DC: subject / LOM: keyword</span><select><option>Familia y raíces</option><option>Sueños y metas</option><option>Superación personal</option><option>Identidad cultural</option><option>Amistades y vínculos</option><option>Pasiones y talentos</option></select></div>
+        <div class="fg"><label>Idioma</label><span class="std">DC: language</span><select><option>Español</option><option>Inglés</option><option>Portugués</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Licencia *</label><span class="std">DC: rights</span><select><option>CC BY 4.0</option><option>CC BY-SA 4.0</option><option>CC BY-NC 4.0</option><option>Todos los derechos reservados</option></select></div>
+        <div class="fg"><label>Tipo de recurso</label><span class="std">DC: type / LOM: learning resource type</span><select><option>Texto narrativo</option><option>Texto + imágenes</option><option>Multimedia</option></select></div>
+      </div>
+      <div class="fg"><label>Fecha de creación</label><span class="std">DC: date</span><input type="date"></div>
+      <div class="btn-row">
+        <button class="btn-cancel">Cancelar</button>
+        <button class="btn-primary" onclick="showToast('✅ Autobiografía enviada al docente para revisión')">Enviar para revisión →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVALUADOR -->
+  <div class="page" id="page-evaluador">
+    <div class="page-title">Panel del evaluador</div>
+    <div class="page-sub">Revisa, aprueba o rechaza las autobiografías pendientes</div>
+    <div class="ev-stats">
+      <div class="stat-card"><div class="sn" style="color:#7A5000">8</div><div class="sl">Pendientes</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--green)">49</div><div class="sl">Aprobadas</div></div>
+      <div class="stat-card"><div class="sn" style="color:var(--red)">7</div><div class="sl">Rechazadas</div></div>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Estudiante</th><th>Título</th><th>Grado</th><th>Enviado</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="eval-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ROLES -->
+  <div class="page" id="page-roles">
+    <div class="page-title">Roles y flujos de trabajo</div>
+    <div class="page-sub">Cuatro roles con permisos diferenciados y flujos funcionales para la gestión del repositorio</div>
+    <div class="roles-grid" id="roles-grid"></div>
+    <div class="flow-box">
+      <h3>📤 Flujo de carga y publicación</h3>
+      <div class="flow-row">
+        <div class="flow-step" style="border-color:#D0BBFF;background:#F5F0FF;"><div class="fs-num">PASO 1</div><div class="fs-name">Estudiante escribe</div><div class="fs-role">y sube el archivo</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="fs-num">PASO 2</div><div class="fs-name">Sistema verifica</div><div class="fs-role">formato y metadatos</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color:#FFD98E;background:#FFF8ED;"><div class="fs-num">PASO 3</div><div class="fs-name">Docente revisa</div><div class="fs-role">da retroalimentación</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color:#A8D5BE;background:#E6F7F1;"><div class="fs-num">PASO 4</div><div class="fs-name">Aprobación</div><div class="fs-role">o correcciones</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="border-color:#C9A84C;background:#FFF8ED;"><div class="fs-num">PASO 5</div><div class="fs-name">Publicación</div><div class="fs-role">visible para todos</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="fs-num">PASO 6</div><div class="fs-name">Valoración</div><div class="fs-role">por la comunidad</div></div>
+      </div>
+    </div>
+    <div class="flow-box">
+      <h3>🔍 Flujo de búsqueda y descarga</h3>
+      <div class="flow-row">
+        <div class="flow-step"><div class="fs-num">PASO 1</div><div class="fs-name">Búsqueda</div><div class="fs-role">por texto o filtros</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="fs-num">PASO 2</div><div class="fs-name">Resultados</div><div class="fs-role">filtrados por sistema</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="fs-num">PASO 3</div><div class="fs-name">Ver detalle</div><div class="fs-role">y metadatos</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="fs-num">PASO 4</div><div class="fs-name">Acceso</div><div class="fs-role">al recurso</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="fs-num">PASO 5</div><div class="fs-name">Valoración</div><div class="fs-role">y comentario</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METADATOS -->
+  <div class="page" id="page-metadatos">
+    <div class="page-title">Esquema de metadatos</div>
+    <div class="page-sub">Estándares Dublin Core (DC) y Learning Object Metadata (LOM) aplicados al repositorio de autobiografías</div>
+    <div class="meta-intro">
+      <h3>¿Por qué usamos estos estándares?</h3>
+      <p>Dublin Core (ISO 15836) permite describir cualquier recurso digital de forma universal. LOM (IEEE 1484.12.1) añade campos específicos para recursos educativos. Juntos garantizan que las autobiografías sean fáciles de encontrar, clasificar y reutilizar en otros entornos educativos.</p>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--p);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.07em;">Dublin Core — Descripción general</div>
+    <div class="meta-grid" id="dc-grid"></div>
+    <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.07em;">LOM — Metadatos educativos</div>
+    <div class="meta-grid" id="lom-grid"></div>
+  </div>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" onclick="handleBg(event)">
+  <div class="modal-box">
+    <div class="modal-banner" id="m-banner">
+      <div class="modal-av" id="m-av"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-name" id="m-name"></div>
+      <div class="modal-sub" id="m-sub"></div>
+      <div class="modal-excerpt" id="m-excerpt"></div>
+      <div class="modal-sec">Metadatos del recurso</div>
+      <table class="meta-table" id="m-meta"></table>
+      <div class="modal-sec">Valorar esta autobiografía</div>
+      <div class="stars-row" id="stars-row"></div>
+      <textarea class="review-area" placeholder="Escribe un comentario sobre esta historia..."></textarea>
+      <button class="btn-review" onclick="showToast('✅ Valoración enviada. ¡Gracias!')">Enviar valoración</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// DATA
+const colors=['#8B3A8B','#2E5FA0','#C0392B','#2E7D5E','#7A5C00','#6B3FA0','#1A5C7A','#8B4513'];
+const grados=['6°','7°','8°','9°','10°'];
+const secciones=['A','B','C'];
+const temas=['Familia y raíces','Sueños y metas','Superación personal','Identidad cultural','Amistades','Pasiones y talentos'];
+const nombres=['Sofía Martínez','Andrés López','Valentina García','Juan Pérez','María Rodríguez','Carlos Gómez','Isabella Torres','Sebastián Ruiz','Camila Vargas','Miguel Díaz','Lucía Herrera','Daniel Morales','Sara Jiménez','Felipe Romero','Paula Restrepo','Santiago Castro','Ana Ríos','Nicolás Pardo','Laura Mendoza','Tomás Salazar','Fernanda Ospina','Mateo Cárdenas','Juliana Arango','Emilio Guerrero','Natalia Quintero','Alejandro Vera','Daniela Suárez','Samuel Peña','Valeria Rojas','Esteban Castillo'];
+const titulos=['Entre montañas y sueños','Mi historia, mi voz','De dónde vengo y a dónde voy','Raíces que me sostienen','El camino que he recorrido','Palabras que me definen','La niña que fui','Aprendiendo a volar','Mi familia, mi fuerza','Cada tropiezo, una lección','El chico de la esquina','Mi vida en colores','Historias de mi barrio','Construyendo quién soy','Las manos de mi abuela','Un sueño llamado fútbol','Entre libros y aventuras','La música que me salva','Mi tierra, mi corazón','Crecer en el campo'];
+const excerpts=['Nací en un pequeño municipio donde el café perfumaba las mañanas y los sueños no tenían límites. Mi historia comienza con las manos de mi abuela y termina en las aulas donde aprendí que el conocimiento es la única herencia que nadie te puede quitar.','Siempre fui el estudiante silencioso del fondo del salón, el que observa más de lo que habla. Hasta que la escritura me enseñó a gritar sin levantar la voz, y encontré en las palabras un hogar que nunca había buscado.','Mi familia llegó a esta ciudad con tres maletas y muchos sueños. Yo tenía cinco años y no entendía nada, pero aprendí que la valentía se hereda y que los nuevos comienzos, aunque duelen, siempre traen algo mejor.','Me gustan los números, la música en domingo y los atardeceres desde la loma de mi barrio. Esta es la historia de cómo esas tres cosas juntas me hicieron quien soy y me enseñaron que la vida tiene ritmo si sabes escucharla.','No siempre fue fácil. Hubo días en que quise rendirme y noches en que las dudas pesaban más que las certezas. Pero cada vez que pensaba en mi mamá, recordaba por qué seguir vale la pena.'];
+const docentes=['Prof. Ana López','Prof. Carlos Rueda','Prof. Diana Mora','Prof. Luis Cárdenas','Prof. Patricia Soto'];
+const licencias=['CC BY 4.0','CC BY-SA 4.0','CC BY-NC 4.0','Todos los derechos reservados'];
+const niveles=['Básica secundaria — 6°','Básica secundaria — 7°','Básica secundaria — 8°','Básica secundaria — 9°','Media — 10°'];
+
+const autos = Array.from({length:30},(_,i)=>({
+  id:i+1,
+  codigo:'AUTO-2025-'+String(i+1).padStart(4,'0'),
+  nombre:nombres[i%nombres.length],
+  inits:nombres[i%nombres.length].split(' ').map(n=>n[0]).join('').slice(0,2),
+  grado:grados[i%grados.length],
+  seccion:secciones[i%secciones.length],
+  tema:temas[i%temas.length],
+  color:colors[i%colors.length],
+  rating:parseFloat((3.8+Math.random()*1.2).toFixed(1)),
+  titulo:titulos[i%titulos.length],
+  vistas:Math.floor(40+Math.random()*220),
+  excerpt:excerpts[i%excerpts.length],
+  docente:docentes[i%docentes.length],
+  licencia:licencias[i%licencias.length],
+  nivel:niveles[i%niveles.length],
+}));
+
+const pendingList=[
+  {est:'Laura Mendoza',titulo:'El camino de vuelta a casa',grado:'8°',fecha:'2025-04-06',status:'pending'},
+  {est:'Tomás Salazar',titulo:'Crecer sin querer',grado:'7°',fecha:'2025-04-05',status:'approved'},
+  {est:'Fernanda Ospina',titulo:'La música que me salva',grado:'9°',fecha:'2025-04-04',status:'pending'},
+  {est:'Mateo Cárdenas',titulo:'Mi barrio, mi escuela',grado:'6°',fecha:'2025-04-03',status:'rejected'},
+  {est:'Juliana Arango',titulo:'Raíces profundas',grado:'10°',fecha:'2025-04-02',status:'pending'},
+  {est:'Emilio Guerrero',titulo:'Entre sueños y libros',grado:'8°',fecha:'2025-04-01',status:'pending'},
+  {est:'Natalia Quintero',titulo:'La herencia de mi abuela',grado:'7°',fecha:'2025-03-30',status:'pending'},
+  {est:'Alejandro Vera',titulo:'Aprendiendo a caer',grado:'9°',fecha:'2025-03-29',status:'approved'},
+];
+
+const rolesData=[
+  {ic:'🎓',cls:'ri-est',name:'Estudiante',perms:[['y','Explorar y buscar autobiografías'],['y','Subir propia autobiografía'],['y','Dejar valoraciones y comentarios'],['y','Ver metadatos de recursos'],['n','Aprobar o rechazar recursos'],['n','Gestionar usuarios']]},
+  {ic:'👨‍🏫',cls:'ri-doc',name:'Docente',perms:[['y','Explorar y buscar'],['y','Subir autobiografías'],['y','Revisar y aprobar su grado'],['y','Dar retroalimentación'],['n','Aprobar otros grados'],['n','Administrar el sistema']]},
+  {ic:'🏫',cls:'ri-coord',name:'Coordinador',perms:[['y','Explorar y buscar'],['y','Aprobar cualquier grado'],['y','Ver estadísticas generales'],['y','Gestión parcial del sistema'],['n','Configurar metadatos'],['n','Respaldo y exportación']]},
+  {ic:'⚙️',cls:'ri-admin',name:'Administrador',perms:[['y','Gestión total del sistema'],['y','Configurar metadatos'],['y','Gestionar usuarios y roles'],['y','Exportar y respaldar datos'],['y','Ver logs y auditoría'],['y','Definir flujos de trabajo']]},
+];
+
+const dcMeta=[
+  {std:'DC: title',name:'Título',desc:'Nombre de la autobiografía.',ex:'"Mi vida entre montañas y sueños"'},
+  {std:'DC: creator',name:'Autor',desc:'Nombre del estudiante que la escribió.',ex:'"Sofía Martínez Ríos"'},
+  {std:'DC: contributor',name:'Docente',desc:'Docente que orienta y aprueba el recurso.',ex:'"Prof. Ana López"'},
+  {std:'DC: subject',name:'Tema principal',desc:'Eje temático de la autobiografía.',ex:'"Identidad cultural"'},
+  {std:'DC: description',name:'Extracto',desc:'Párrafo introductorio para el lector.',ex:'"Nací en un municipio donde..."'},
+  {std:'DC: date',name:'Fecha',desc:'Fecha de publicación en el repositorio.',ex:'"2025-04-08"'},
+  {std:'DC: type',name:'Tipo',desc:'Categoría del recurso digital.',ex:'"Texto narrativo autobiográfico"'},
+  {std:'DC: format',name:'Formato',desc:'Formato del archivo subido.',ex:'"PDF", "DOCX"'},
+  {std:'DC: language',name:'Idioma',desc:'Idioma en que está escrita.',ex:'"Español (es)"'},
+  {std:'DC: rights',name:'Licencia',desc:'Condiciones de uso y distribución.',ex:'"CC BY-NC 4.0"'},
+  {std:'DC: identifier',name:'Identificador',desc:'Código único del recurso.',ex:'"AUTO-2025-0042"'},
+  {std:'DC: audience',name:'Audiencia',desc:'Grado escolar del autor.',ex:'"8° grado"'},
+];
+const lomMeta=[
+  {std:'LOM: educational level',name:'Nivel educativo',desc:'Grado escolar específico del estudiante.',ex:'"Básica secundaria — 9°"',lom:true},
+  {std:'LOM: learning resource type',name:'Tipo de objeto',desc:'Clasificación pedagógica del recurso.',ex:'"Narrative text / Self-expression"',lom:true},
+  {std:'LOM: context',name:'Contexto',desc:'Entorno escolar donde se usa el recurso.',ex:'"Sección A — Grado 8°"',lom:true},
+  {std:'LOM: keyword',name:'Palabras clave',desc:'Términos para indexar y buscar.',ex:'"familia, identidad, autobiografía"',lom:true},
+  {std:'LOM: interactivity type',name:'Interactividad',desc:'Nivel de interacción del recurso.',ex:'"Expositivo (lectura + valoración)"',lom:true},
+  {std:'LOM: difficulty',name:'Dificultad',desc:'Profundidad narrativa del texto.',ex:'"Básico / Intermedio"',lom:true},
+];
+
+// RENDER
+let activeFilter='todos', searchQ='';
+
+function renderCards(list){
+  const g=document.getElementById('res-grid');
+  if(!list.length){g.innerHTEZ='<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3);">No se encontraron autobiografías.</div>';return;}
+  g.innerHTEZ=list.map((a,i)=>`
+    <div class="res-card" style="animation-delay:${i*0.04}s" onclick="openModal(${a.id})">
+      <div class="rc-top" style="background:${a.color};">
+        <div class="rc-avatar" style="background:${a.color};">${a.inits}</div>
+        <span class="rc-grado">${a.grado} — ${a.seccion}</span>
+      </div>
+      <div class="rc-body">
+        <div class="rc-name">${a.nombre}</div>
+        <div class="rc-titulo">${a.titulo}</div>
+        <div class="rc-excerpt">${a.excerpt}</div>
+        <div class="meta-chips"><span class="mc">DC:subject</span><span class="mc">LOM:level</span><span class="mc">DC:rights</span></div>
+        <div class="rc-tags"><span class="tag">${a.tema}</span><span class="tag">Autobiografía</span></div>
+        <div class="rc-footer"><span>👁 ${a.vistas} vistas</span><span class="rc-stars">★ ${a.rating}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function getFiltered(){
+  return autos.filter(a=>{
+    const mf=activeFilter==='todos'||a.grado===activeFilter;
+    const q=searchQ;
+    const mq=!q||a.nombre.toLowerCase().includes(q)||a.titulo.toLowerCase().includes(q)||a.tema.toLowerCase().includes(q)||a.grado.includes(q);
+    return mf&&mq;
+  });
+}
+function setFilter(f,el){activeFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderCards(getFiltered());}
+function filterCards(){searchQ=(document.getElementById('hero-search').value||'').toLowerCase();renderCards(getFiltered());}
+function doSearch(){searchQ=document.getElementById('top-search').value.toLowerCase();document.getElementById('hero-search').value=document.getElementById('top-search').value;renderCards(getFiltered());}
+
+function renderEval(){
+  document.getElementById('eval-tbody').innerHTEZ=pendingList.map(p=>`
+    <tr>
+      <td style="font-weight:500">${p.est}</td>
+      <td>${p.titulo}</td>
+      <td>${p.grado}</td>
+      <td>${p.fecha}</td>
+      <td><span class="${p.status==='pending'?'s-pending':p.status==='approved'?'s-approved':'s-rejected'}">${p.status==='pending'?'Pendiente':p.status==='approved'?'Aprobada':'Rechazada'}</span></td>
+      <td>${p.status==='pending'?`<button class="act-btn" style="color:var(--green)" onclick="showToast('✅ Autobiografía aprobada')">✓ Aprobar</button><button class="act-btn" style="color:var(--red)" onclick="showToast('❌ Autobiografía rechazada')">✗ Rechazar</button>`:'<span style="font-size:11px;color:var(--text3)">Procesada</span>'}</td>
+    </tr>`).join('');
+}
+
+function renderRoles(){
+  document.getElementById('roles-grid').innerHTEZ=rolesData.map(r=>`
+    <div class="role-card">
+      <div class="ri ${r.cls}">${r.ic}</div>
+      <div class="role-name">${r.name}</div>
+      <ul class="perm-list">${r.perms.map(p=>`<li><span class="${p[0]==='y'?'py':'pn'}">${p[0]==='y'?'✓':'✗'}</span>${p[1]}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+function renderMeta(){
+  document.getElementById('dc-grid').innerHTEZ=dcMeta.map(m=>`
+    <div class="mcard"><span class="mstd">${m.std}</span><div class="mname">${m.name}</div><div class="mdesc">${m.desc}</div><span class="mex">${m.ex}</span></div>`).join('');
+  document.getElementById('lom-grid').innerHTEZ=lomMeta.map(m=>`
+    <div class="mcard"><span class="mstd lom">${m.std}</span><div class="mname">${m.name}</div><div class="mdesc">${m.desc}</div><span class="mex">${m.ex}</span></div>`).join('');
+}
+
+// MODAL
+function openModal(id){
+  const a=autos.find(x=>x.id===id);
+  document.getElementById('m-banner').style.background=a.color;
+  document.getElementById('m-av').style.background=a.color;
+  document.getElementById('m-av').textContent=a.inits;
+  document.getElementById('m-name').textContent=a.nombre;
+  document.getElementById('m-sub').textContent=`${a.titulo} · ${a.grado} Sección ${a.seccion} · ${a.docente}`;
+  document.getElementById('m-excerpt').textContent=a.excerpt;
+  const rows=[
+    ['DC: title',a.titulo],['DC: creator',a.nombre],['DC: contributor',a.docente],
+    ['DC: subject',a.tema],['DC: type','Texto narrativo autobiográfico'],
+    ['DC: language','Español (es)'],['DC: rights',a.licencia],
+    ['DC: identifier',a.codigo],['DC: date','2025-04-08'],
+    ['LOM: educational level',a.nivel],['LOM: context','Sección '+a.seccion],
+    ['LOM: keyword',a.tema+', autobiografía, escritura'],['LOM: difficulty','Básico — Intermedio'],
+  ];
+  document.getElementById('m-meta').innerHTEZ=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  document.getElementById('stars-row').innerHTEZ=[1,2,3,4,5].map(i=>`<span class="star" onclick="setStar(${i})">★</span>`).join('');
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function handleBg(e){if(e.target===document.getElementById('modal'))closeModal();}
+function setStar(n){document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('lit',i<n));}
+
+// PAGES
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+// ROLE CYCLE
+const roleNames=['Estudiante','Docente','Coordinador','Administrador'];
+const roleInits=['ES','EZ','CO','AD'];
+let roleIdx=1;
+function cycleRole(){
+  roleIdx=(roleIdx+1)%4;
+  document.getElementById('role-label').textContent=roleNames[roleIdx];
+  document.getElementById('top-avatar').textContent=roleInits[roleIdx];
+  document.getElementById('sb-av').textContent=roleInits[roleIdx];
+  document.getElementById('sb-role').textContent=roleNames[roleIdx]+' · Institución Educativa';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// INIT
+renderCards(autos);
+renderEval();
+renderRoles();
+renderMeta();
+</script>
+</body>
+</html>
